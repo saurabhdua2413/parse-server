@@ -1,0 +1,30 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: my-parse-app
+spec:
+  replicas: 1 # number of running pods
+  template:
+    metadata:
+      labels:
+        name: my-parse-app
+        app: my-parse-app
+        tier: backend
+        role: application-server
+    spec:
+      volumes:
+      - name: my-parse-app-config
+        configMap:
+          name: my-parse-app-config
+      containers:
+      - image: saurabhdua24/my-parse-server # image name and tag from the container registry
+        imagePullPolicy: Always
+        name: my-parse-app
+        command: ["npm","start",--,] # run custom command of npm start with the configuration file
+        args: ["/etc/config/config.json"]
+        volumeMounts:
+          - name: my-parse-app-config
+            mountPath: "/etc/config"
+            readOnly: true
+        ports:
+        - containerPort: 1337
